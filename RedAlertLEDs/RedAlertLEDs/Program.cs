@@ -1,22 +1,26 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿using System.Drawing;
 using RedAlertLEDs;
 
-var ard = new Arduino("COM5");
+var ledStrip = new ArduinoLedStrip(86, "COM5");
+ledStrip.Reset();
 
-var buffer = new byte[86 * 3 + 1];
+double t = 0;
 
-buffer[0] = 0xAA;
-
-var rand = new Random();
-
-foreach (var i in Enumerable.Range(0, 86))
+while (true)
 {
-    buffer[i * 3 + 1] = (byte)rand.Next(0, 255);
-    buffer[i * 3 + 1 + 1] = (byte)rand.Next(0, 255);
-    buffer[i * 3 + 2 + 1] = (byte)rand.Next(0, 255);
+    for (int i = 0; i <= 85; i++)
+    {
+        double angle = i * 0.15 + t;
+
+        int r = (int)((Math.Sin(angle) + 1) * 120);
+        int g = (int)((Math.Sin(angle + 2) + 1) * 120);
+        int b = (int)((Math.Sin(angle + 4) + 1) * 120);
+
+        ledStrip.SetColor(Color.FromArgb(r, g, b), i);
+    }
+
+    t += 0.08;
+
+    ledStrip.Update();
+    Thread.Sleep(15);
 }
-
-ard.Write(buffer);
-
-Task.Delay(1000).Wait();
