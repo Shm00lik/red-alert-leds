@@ -10,7 +10,7 @@ public record Alert
 
     [JsonPropertyName("title")] public required string Title { get; init; }
 
-    [JsonPropertyName("data")] public required string Polygons { get; init; }
+    [JsonPropertyName("data")] public required List<string> Polygons { get; init; }
 
     [JsonPropertyName("desc")] public required string Description { get; init; }
 }

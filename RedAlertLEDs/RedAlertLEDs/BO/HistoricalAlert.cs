@@ -8,7 +8,7 @@ public record HistoricalAlert
 
     [JsonPropertyName("title")] public required string Title { get; init; }
 
-    [JsonPropertyName("data")] public required string Polygon { get; init; }
+    [JsonPropertyName("data")] public required List<string> Polygons { get; init; }
 
     [JsonPropertyName("category")] public required HistoricalAlertCategory Category { get; init; }
 }

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedAlertLEDs", "RedAlertLEDs\RedAlertLEDs.csproj", "{4765B040-0620-4428-8CBD-BBF2ABFC12A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedAlertLEDs", "RedAlertLEDs\RedAlertLEDs.csproj", "{D8E2EF48-72F0-48E4-A9B8-29D77BF4517B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4765B040-0620-4428-8CBD-BBF2ABFC12A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4765B040-0620-4428-8CBD-BBF2ABFC12A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4765B040-0620-4428-8CBD-BBF2ABFC12A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4765B040-0620-4428-8CBD-BBF2ABFC12A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8E2EF48-72F0-48E4-A9B8-29D77BF4517B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8E2EF48-72F0-48E4-A9B8-29D77BF4517B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8E2EF48-72F0-48E4-A9B8-29D77BF4517B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8E2EF48-72F0-48E4-A9B8-29D77BF4517B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

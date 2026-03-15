@@ -1,26 +1,22 @@
-﻿using System.Drawing;
-using RedAlertLEDs;
+var builder = WebApplication.CreateBuilder(args);
 
-var ledStrip = new ArduinoLedStrip(86, "COM5");
-ledStrip.Reset();
+// Add services to the container.
 
-double t = 0;
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
 
-while (true)
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    for (int i = 0; i <= 85; i++)
-    {
-        double angle = i * 0.15 + t;
-
-        int r = (int)((Math.Sin(angle) + 1) * 120);
-        int g = (int)((Math.Sin(angle + 2) + 1) * 120);
-        int b = (int)((Math.Sin(angle + 4) + 1) * 120);
-
-        ledStrip.SetColor(Color.FromArgb(r, g, b), i);
-    }
-
-    t += 0.08;
-
-    ledStrip.Update();
-    Thread.Sleep(15);
+    app.MapOpenApi();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
