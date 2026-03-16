@@ -1,4 +1,4 @@
-namespace RedAlertLEDs.BO;
+namespace RedAlertLEDs.Services.StateManager;
 
 public enum AlertState
 {

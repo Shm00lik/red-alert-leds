@@ -11,9 +11,4 @@
         <PackageReference Include="System.IO.Ports" Version="10.0.5" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="Alerts.json" />
-      <None Include="AlertsHistory.json" />
-    </ItemGroup>
-
 </Project>
