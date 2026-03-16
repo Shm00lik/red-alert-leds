@@ -5,8 +5,9 @@ namespace RedAlertLEDs.Services.StateManager;
 public class StateManagerService
 {
     private AlertState _currentState = AlertState.None;
-    private event EventHandler<AlertStateChangedEventArgs>? AlertStateChanged;
     private readonly LedStripService _ledStripService;
+
+    public event EventHandler<AlertStateChangedEventArgs>? AlertStateChanged;
 
     public StateManagerService(PolygonsService polygonsService, LedStripService ledStripService)
     {

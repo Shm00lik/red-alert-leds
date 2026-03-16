@@ -1,10 +1,9 @@
 using System.Drawing;
 
-namespace RedAlertLEDs;
+namespace RedAlertLEDs.Hardware;
 
 public class ArduinoLedStrip(Arduino arduino, int numLeds)
 {
-    private readonly int _numLeds = numLeds;
     private readonly byte[] _buffer = new byte[numLeds * 3];
 
     public ArduinoLedStrip(int numLeds, string port = Arduino.DefaultPort, int baudrate = Arduino.DefaultBaudRate)
@@ -23,17 +22,22 @@ public class ArduinoLedStrip(Arduino arduino, int numLeds)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-        
+
         _buffer[index * 3] = color.R;
         _buffer[index * 3 + 1] = color.G;
         _buffer[index * 3 + 2] = color.B;
     }
 
-    public void SetColor(Color colors, bool update = true)
+    public void SetColor(Color colors, bool update = false)
     {
-        for (var i = 0; i < _numLeds; i++)
+        for (var i = 0; i < numLeds; i++)
         {
             SetColor(colors, i);
+        }
+
+        if (update)
+        {
+            Update();
         }
     }
 
@@ -43,7 +47,7 @@ public class ArduinoLedStrip(Arduino arduino, int numLeds)
         {
             throw new ArgumentOutOfRangeException(nameof(index));
         }
-        
+
         var r = _buffer[index * 3];
         var g = _buffer[index * 3 + 1];
         var b = _buffer[index * 3 + 2];
@@ -53,9 +57,9 @@ public class ArduinoLedStrip(Arduino arduino, int numLeds)
 
     private bool IsValidIndex(int index)
     {
-        return index >= 0  && index < _numLeds;
+        return index >= 0 && index < numLeds;
     }
-    
+
     public void Update()
     {
         arduino.Write(_buffer);

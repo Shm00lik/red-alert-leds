@@ -1,12 +1,26 @@
 using System.Drawing;
+using RedAlertLEDs.Hardware;
 using RedAlertLEDs.Services.StateManager;
 
 namespace RedAlertLEDs.Services;
 
 public class LedStripService
 {
-    private const 
-        
+    private const int NumOfLeds = 86;
+
+    private readonly ArduinoLedStrip _ledStrip = new(NumOfLeds);
+
+    public LedStripService(StateManagerService stateManagerService)
+    {
+        stateManagerService.AlertStateChanged += OnAlertStateChanged;
+    }
+
+    private void OnAlertStateChanged(object? sender, AlertStateChangedEventArgs e)
+    {
+        var color = GetStateColor(e.CurrentState);
+        _ledStrip.SetColor(color, true);
+    }
+
     private Color GetStateColor(AlertState state)
     {
         switch (state)
