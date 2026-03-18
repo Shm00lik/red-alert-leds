@@ -11,7 +11,7 @@ public class PolygonsService
 
     public void OnAlertReceived(object? sender, AlertEventArgs e)
     {
-        var isRelevantAlert = _relevantPolygons.Any(p => e.Alert.Polygons.Contains(p));
+        var isRelevantAlert = true; // _relevantPolygons.Any(p => e.Alert.Polygons.Contains(p));
 
         if (!isRelevantAlert)
         {

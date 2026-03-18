@@ -1,18 +1,21 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RedAlertLEDs.BO;
-using RedAlertLEDs.Controllers;
+using RedAlertLEDs.Extensions;
+using RedAlertLEDs.JsonConverters;
+using RedAlertLEDs.Services.Polygons;
+using ILogger = Serilog.ILogger;
 
 namespace RedAlertLEDs.Services.HomeFrontCommand;
 
-public class HomeFrontCommandPoller : BackgroundService
+public class HomeFrontCommandPoller(ILogger logger) : BackgroundService
 {
     private const string CurrentAlertsUrl = "https://www.oref.org.il/warningMessages/alert/Alerts.json";
     private const string AlertsHistoryUrl = "https://www.oref.org.il/warningMessages/alert/History/AlertsHistory.json";
 
     private readonly JsonSerializerOptions _serializerOptions = new()
     {
-        NumberHandling = JsonNumberHandling.AllowReadingFromString
+        Converters = { new AlertCategoryConverter() }
     };
 
     private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(1);
@@ -25,10 +28,13 @@ public class HomeFrontCommandPoller : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var alerts = await GetCurrentAlerts();
+            var alerts = (await GetCurrentAlerts()).ToList();
+
+            logger.Information("Received {Count} alerts", alerts.Count);
 
             foreach (var alert in alerts)
             {
+                Console.WriteLine(alert);
                 OnAlertReceived(alert);
             }
 
@@ -38,23 +44,20 @@ public class HomeFrontCommandPoller : BackgroundService
 
     private async Task<IEnumerable<Alert>> GetCurrentAlerts()
     {
-        if (TestController.Alert != null)
-        {
-            return [TestController.Alert];
-        }
-
         var response = await _httpClient.GetAsync(CurrentAlertsUrl);
 
         response.EnsureSuccessStatusCode();
 
         try
         {
-            var data = await response.Content.ReadFromJsonAsync<IEnumerable<Alert>>();
-            return data ?? [];
+            var data = await response.Content.ReadOneOrMoreAsync<Alert>();
+            return data;
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            Console.WriteLine($"Failed to deserialize current alerts: {ex.Message}");
+            var json = await response.Content.ReadAsStringAsync();
+            logger.Warning("Failed to deserialize alerts response: {Json}", json);
+
             return [];
         }
     }

@@ -11,13 +11,13 @@ public class Orchestrator(
     StateManagerService stateManagerService,
     LedStripService ledStripService)
 {
-    public Task Initialize()
+    public async Task Initialize()
     {
         homeFrontCommandPoller.AlertReceived += polygonsService.OnAlertReceived;
         polygonsService.RelevantAlertReceived += stateManagerService.OnRelevantAlertReceived;
         stateManagerService.AlertStateChanged += ledStripService.OnAlertStateChanged;
 
-        return Task.CompletedTask;
+        await ledStripService.TurnOn();
     }
 
     public async Task Stop()

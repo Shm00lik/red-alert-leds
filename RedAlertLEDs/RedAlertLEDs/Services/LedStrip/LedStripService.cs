@@ -16,36 +16,46 @@ public class LedStripService
         _ledStrip.SetColor(color, true);
     }
 
+    public async Task TurnOn()
+    {
+        var noneColor = GetStateColor(AlertState.None);
+        var safeColor = GetStateColor(AlertState.Safe);
+
+        await Blink(safeColor, noneColor);
+    }
+
     public async Task TurnOff()
     {
         var noneColor = GetStateColor(AlertState.None);
         var safeColor = GetStateColor(AlertState.Safe);
 
+        // for (var i = 0; i < NumOfLeds; i++)
+        // {
+        //     _ledStrip.SetColor(noneColor, i);
+        //     _ledStrip.Update();
+        //     await Task.Delay(10);
+        // }
+        //
+        // _ledStrip.SetColor(noneColor, true);
 
-        for (var i = 0; i < NumOfLeds; i++)
-        {
-            _ledStrip.SetColor(noneColor, i);
-            _ledStrip.Update();
-            await Task.Delay(10);
-        }
+        await Blink(safeColor, noneColor);
+    }
 
-        _ledStrip.SetColor(noneColor, true);
-
-        await Task.Delay(150);
-
-        _ledStrip.SetColor(safeColor, true);
-
-        await Task.Delay(150);
-
-        _ledStrip.SetColor(noneColor, true);
+    private async Task Blink(Color color1, Color color2)
+    {
+        _ledStrip.SetColor(color1, true);
 
         await Task.Delay(150);
 
-        _ledStrip.SetColor(safeColor, true);
+        _ledStrip.SetColor(color2, true);
 
         await Task.Delay(150);
 
-        _ledStrip.SetColor(noneColor, true);
+        _ledStrip.SetColor(color1, true);
+
+        await Task.Delay(150);
+
+        _ledStrip.SetColor(color2, true);
     }
 
     private static Color GetStateColor(AlertState state)
