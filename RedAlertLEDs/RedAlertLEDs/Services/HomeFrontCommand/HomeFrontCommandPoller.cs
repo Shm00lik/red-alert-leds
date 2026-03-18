@@ -13,11 +13,6 @@ public class HomeFrontCommandPoller(ILogger logger) : BackgroundService
     private const string CurrentAlertsUrl = "https://www.oref.org.il/warningMessages/alert/Alerts.json";
     private const string AlertsHistoryUrl = "https://www.oref.org.il/warningMessages/alert/History/AlertsHistory.json";
 
-    private readonly JsonSerializerOptions _serializerOptions = new()
-    {
-        Converters = { new AlertCategoryConverter() }
-    };
-
     private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(1);
 
     private readonly HttpClient _httpClient = new();
@@ -28,7 +23,7 @@ public class HomeFrontCommandPoller(ILogger logger) : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var alerts = (await GetCurrentAlerts()).ToList();
+            var alerts = (await GetHistoricalAlerts()).ToList();
 
             logger.Information("Received {Count} alerts", alerts.Count);
 
@@ -68,12 +63,25 @@ public class HomeFrontCommandPoller(ILogger logger) : BackgroundService
 
         response.EnsureSuccessStatusCode();
 
-        var data = await response.Content.ReadFromJsonAsync<IEnumerable<HistoricalAlert>>(_serializerOptions);
+        try
+        {
+            var data = await response.Content.ReadOneOrMoreAsync<HistoricalAlert>();
+            return data.Where(alert => alert.Date > DateTime.Now - TimeSpan.FromHours(1)).OrderBy(alert => alert.Date);
+        }
+        catch (JsonException ex)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            logger.Warning(
+                "Failed to deserialize historical alerts response: {Message}\n{Json}",
+                ex,
+                string.Join("", json.Take(200))
+            );
 
-        return data ?? [];
+            return [];
+        }
     }
 
-    private void OnAlertReceived(Alert alert)
+    private void OnAlertReceived(HistoricalAlert alert)
     {
         AlertReceived?.Invoke(this, new AlertEventArgs
         {

@@ -10,7 +10,11 @@ public static class HttpContentExtensions
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
-        Converters = { new AlertCategoryConverter() }
+        Converters =
+        {
+            new AlertCategoryConverter(),
+            new CustomDateTimeConverter()
+        }
     };
 
     public static async Task<IEnumerable<T>> ReadOneOrMoreAsync<T>(this HttpContent content)

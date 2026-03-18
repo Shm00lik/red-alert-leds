@@ -4,6 +4,6 @@ public enum AlertCategory
 {
     Missiles = 1,
     Uav = 2,
-    IncidentEnded = 10,
+    IncidentEnded = 13,
     EarlyWarning = 14
 }

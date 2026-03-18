@@ -35,7 +35,7 @@ public class StateManagerService(ILogger logger)
         _currentState = state;
     }
 
-    private static AlertState GetStateForAlert(Alert alert)
+    private static AlertState GetStateForAlert(HistoricalAlert alert)
     {
         return alert.Category switch
         {

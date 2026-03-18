@@ -4,5 +4,5 @@ namespace RedAlertLEDs.Services.Polygons;
 
 public class RelevantAlertEventArgs : EventArgs
 {
-    public Alert Alert { get; init; }
+    public HistoricalAlert Alert { get; init; }
 }

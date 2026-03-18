@@ -11,7 +11,7 @@ public class PolygonsService
 
     public void OnAlertReceived(object? sender, AlertEventArgs e)
     {
-        var isRelevantAlert = true; // _relevantPolygons.Any(p => e.Alert.Polygons.Contains(p));
+        var isRelevantAlert = _relevantPolygons.Any(p => e.Alert.Polygon == p);
 
         if (!isRelevantAlert)
         {
@@ -21,7 +21,7 @@ public class PolygonsService
         OnRelevantAlertReceived(e.Alert);
     }
 
-    private void OnRelevantAlertReceived(Alert alert)
+    private void OnRelevantAlertReceived(HistoricalAlert alert)
     {
         RelevantAlertReceived?.Invoke(this, new RelevantAlertEventArgs
         {

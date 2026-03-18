@@ -4,5 +4,5 @@ namespace RedAlertLEDs.Services.HomeFrontCommand;
 
 public class AlertEventArgs : EventArgs
 {
-    public Alert Alert { get; init; }
+    public HistoricalAlert Alert { get; init; }
 }
