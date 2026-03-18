@@ -9,12 +9,7 @@ public class PolygonsService
 
     public event EventHandler<RelevantAlertEventArgs>? RelevantAlertReceived;
 
-    public PolygonsService(HomeFrontCommandPoller homeFrontCommandPoller)
-    {
-        homeFrontCommandPoller.AlertReceived += OnAlertReceived;
-    }
-    
-    private void OnAlertReceived(object? sender, AlertEventArgs e)
+    public void OnAlertReceived(object? sender, AlertEventArgs e)
     {
         var isRelevantAlert = _relevantPolygons.Any(p => e.Alert.Polygons.Contains(p));
 

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RedAlertLEDs.BO;
+using RedAlertLEDs.Controllers;
 
 namespace RedAlertLEDs.Services.HomeFrontCommand;
 
@@ -8,12 +9,13 @@ public class HomeFrontCommandPoller : BackgroundService
 {
     private const string CurrentAlertsUrl = "https://www.oref.org.il/warningMessages/alert/Alerts.json";
     private const string AlertsHistoryUrl = "https://www.oref.org.il/warningMessages/alert/History/AlertsHistory.json";
-    
-    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(5);
+
     private readonly JsonSerializerOptions _serializerOptions = new()
     {
         NumberHandling = JsonNumberHandling.AllowReadingFromString
     };
+
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(1);
 
     private readonly HttpClient _httpClient = new();
 
@@ -29,20 +31,32 @@ public class HomeFrontCommandPoller : BackgroundService
             {
                 OnAlertReceived(alert);
             }
-            
+
             await Task.Delay(_pollingInterval, stoppingToken);
         }
     }
 
     private async Task<IEnumerable<Alert>> GetCurrentAlerts()
     {
+        if (TestController.Alert != null)
+        {
+            return [TestController.Alert];
+        }
+
         var response = await _httpClient.GetAsync(CurrentAlertsUrl);
 
         response.EnsureSuccessStatusCode();
 
-        var data = await response.Content.ReadFromJsonAsync<IEnumerable<Alert>>();
-
-        return data ?? [];
+        try
+        {
+            var data = await response.Content.ReadFromJsonAsync<IEnumerable<Alert>>();
+            return data ?? [];
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Failed to deserialize current alerts: {ex.Message}");
+            return [];
+        }
     }
 
     private async Task<IEnumerable<HistoricalAlert>> GetHistoricalAlerts()
