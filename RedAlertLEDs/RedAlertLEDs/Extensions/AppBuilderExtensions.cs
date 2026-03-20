@@ -1,9 +1,9 @@
 using RedAlertLEDs.Services;
-using RedAlertLEDs.Services.HomeFrontCommand;
 using RedAlertLEDs.Services.LedStrip;
 using RedAlertLEDs.Services.Polygons;
 using RedAlertLEDs.Services.Predictor;
 using RedAlertLEDs.Services.StateManager;
+using RedAlertLEDs.Services.Tzofar;
 using Serilog;
 
 namespace RedAlertLEDs.Extensions;
@@ -20,10 +20,10 @@ public static class AppBuilderExtensions
 
     public static void AddBackgroundServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSingleton<HomeFrontCommandPoller>();
+        builder.Services.AddSingleton<TzofarAlertsPoller>();
 
         builder.Services.AddHostedService(provider =>
-            provider.GetRequiredService<HomeFrontCommandPoller>());
+            provider.GetRequiredService<TzofarAlertsPoller>());
     }
 
     public static void AddOrchestrators(this WebApplicationBuilder builder)

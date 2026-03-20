@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RedAlertLEDs.BO;
+using RedAlertLEDs.BO.Alerts;
 
 namespace RedAlertLEDs.JsonConverters;
 
