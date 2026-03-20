@@ -22,10 +22,10 @@ public class StateManagerService(ILogger logger)
             return;
         }
 
-        SetState(GetStateForAlert(e.Alert), sender);
+        SetState(GetStateForAlert(e.Alert), this);
     }
 
-    private void SetState(AlertState state, object? sender)
+    public void SetState(AlertState state, object? sender)
     {
         AlertStateChanged?.Invoke(sender, new AlertStateChangedEventArgs
         {

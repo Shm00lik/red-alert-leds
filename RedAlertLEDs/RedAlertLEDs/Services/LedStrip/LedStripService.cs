@@ -6,7 +6,7 @@ namespace RedAlertLEDs.Services.LedStrip;
 
 public class LedStripService
 {
-    private const int NumOfLeds = 86;
+    public const int NumOfLeds = 86;
 
     private readonly ArduinoLedStrip _ledStrip = new(NumOfLeds);
 
@@ -16,12 +16,26 @@ public class LedStripService
         _ledStrip.SetColor(color, true);
     }
 
+    public void SetLedColor(Color color, int index, bool update = false)
+    {
+        _ledStrip.SetColor(color, index);
+
+        if (update)
+        {
+            _ledStrip.Update();
+        }
+    }
+
+    public void SetColor(Color color, bool update = false) {
+        _ledStrip.SetColor(color, true);
+    }
+
     public async Task TurnOn()
     {
         var noneColor = GetStateColor(AlertState.None);
         var safeColor = GetStateColor(AlertState.Safe);
 
-        await Blink(safeColor, noneColor);
+        await Blink(safeColor, noneColor, 150);
     }
 
     public async Task TurnOff()
@@ -29,31 +43,22 @@ public class LedStripService
         var noneColor = GetStateColor(AlertState.None);
         var safeColor = GetStateColor(AlertState.Safe);
 
-        // for (var i = 0; i < NumOfLeds; i++)
-        // {
-        //     _ledStrip.SetColor(noneColor, i);
-        //     _ledStrip.Update();
-        //     await Task.Delay(10);
-        // }
-        //
-        // _ledStrip.SetColor(noneColor, true);
-
-        await Blink(safeColor, noneColor);
+        await Blink(safeColor, noneColor, 150);
     }
 
-    private async Task Blink(Color color1, Color color2)
+    private async Task Blink(Color color1, Color color2, int intervalMs)
     {
         _ledStrip.SetColor(color1, true);
 
-        await Task.Delay(150);
+        await Task.Delay(intervalMs);
 
         _ledStrip.SetColor(color2, true);
 
-        await Task.Delay(150);
+        await Task.Delay(intervalMs);
 
         _ledStrip.SetColor(color1, true);
 
-        await Task.Delay(150);
+        await Task.Delay(intervalMs);
 
         _ledStrip.SetColor(color2, true);
     }

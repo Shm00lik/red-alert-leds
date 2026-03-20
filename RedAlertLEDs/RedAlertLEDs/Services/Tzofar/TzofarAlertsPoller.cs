@@ -1,7 +1,6 @@
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using RedAlertLEDs.BO;
 using RedAlertLEDs.BO.Alerts;
 using RedAlertLEDs.BO.TzofarMessages;
 using ILogger = Serilog.ILogger;
