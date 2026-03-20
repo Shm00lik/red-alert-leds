@@ -1,10 +1,10 @@
-namespace RedAlertLEDs;
-
 using System.IO.Ports;
+
+namespace RedAlertLEDs.Hardware;
 
 public class Arduino : IDisposable
 {    
-    public const int DefaultBaudRate = 230400;
+    public const int DefaultBaudRate = 115200;
     public const string DefaultPort = "COM5";
     private const byte StartByte = 0xAA;
     private const int ReadTimeout = 500;

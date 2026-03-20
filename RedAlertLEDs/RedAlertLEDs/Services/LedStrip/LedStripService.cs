@@ -63,7 +63,7 @@ public class LedStripService
         _ledStrip.SetColor(color2, true);
     }
 
-    private static Color GetStateColor(AlertState state)
+    public static Color GetStateColor(AlertState state)
     {
         switch (state)
         {

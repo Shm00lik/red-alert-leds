@@ -12,9 +12,9 @@ public class PredictorService(
 {
     private CancellationTokenSource _cts = new();
 
-    private readonly TimeSpan _safeToNoneInterval = TimeSpan.FromSeconds(10);
-    private readonly TimeSpan _earlyWarningToAlertInterval = TimeSpan.FromSeconds(10);
-    private readonly TimeSpan _alertToSafeInterval = TimeSpan.FromSeconds(10);
+    private readonly TimeSpan _earlyWarningToAlertInterval = TimeSpan.FromMinutes(10);
+    private readonly TimeSpan _alertToSafeInterval = TimeSpan.FromMinutes(10);
+    private readonly TimeSpan _safeToNoneInterval = TimeSpan.FromMinutes(10);
 
     public void OnAlertStateChanged(object? sender, AlertStateChangedEventArgs e)
     {
@@ -51,6 +51,10 @@ public class PredictorService(
             await Task.Delay(intervalBetweenLeds, ct);
             ledStripService.SetLedColor(Color.Black, i, true);
         }
+
+        var finalColor = LedStripService.GetStateColor(AlertState.EarlyWarning);
+
+        ledStripService.SetColor(finalColor, true);
     }
 
     private async Task HandleAlert(CancellationToken ct)
@@ -62,6 +66,10 @@ public class PredictorService(
             await Task.Delay(intervalBetweenLeds, ct);
             ledStripService.SetLedColor(Color.Black, i, true);
         }
+
+        var finalColor = LedStripService.GetStateColor(AlertState.Alert);
+
+        ledStripService.SetColor(finalColor, true);
     }
 
     private async Task HandleSafe(CancellationToken ct)
@@ -73,6 +81,10 @@ public class PredictorService(
             await Task.Delay(intervalBetweenLeds, ct);
             ledStripService.SetLedColor(Color.Black, i, true);
         }
+
+        var finalColor = LedStripService.GetStateColor(AlertState.Safe);
+
+        ledStripService.SetColor(finalColor, true);
     }
 
     private void ResetCancellationToken()
