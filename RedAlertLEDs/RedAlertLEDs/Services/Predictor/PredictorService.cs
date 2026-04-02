@@ -14,7 +14,7 @@ public class PredictorService(
 
     private readonly TimeSpan _earlyWarningToAlertInterval = TimeSpan.FromMinutes(10);
     private readonly TimeSpan _alertToSafeInterval = TimeSpan.FromMinutes(10);
-    private readonly TimeSpan _safeToNoneInterval = TimeSpan.FromMinutes(10);
+    private readonly TimeSpan _safeToNoneInterval = TimeSpan.FromMinutes(1);
 
     public void OnAlertStateChanged(object? sender, AlertStateChangedEventArgs e)
     {
@@ -25,7 +25,7 @@ public class PredictorService(
 
         ResetCancellationToken();
 
-        switch (e.CurrentState)
+        switch (e.State)
         {
             case AlertState.EarlyWarning:
                 _ = HandleEarlyWarning(_cts.Token);
@@ -52,7 +52,7 @@ public class PredictorService(
             ledStripService.SetLedColor(Color.Black, i, true);
         }
 
-        var finalColor = LedStripService.GetStateColor(AlertState.EarlyWarning);
+        var finalColor = ledStripService.GetStateColor(AlertState.EarlyWarning);
 
         ledStripService.SetColor(finalColor, true);
     }
@@ -67,7 +67,7 @@ public class PredictorService(
             ledStripService.SetLedColor(Color.Black, i, true);
         }
 
-        var finalColor = LedStripService.GetStateColor(AlertState.Alert);
+        var finalColor = ledStripService.GetStateColor(AlertState.Alert);
 
         ledStripService.SetColor(finalColor, true);
     }
@@ -82,9 +82,7 @@ public class PredictorService(
             ledStripService.SetLedColor(Color.Black, i, true);
         }
 
-        var finalColor = LedStripService.GetStateColor(AlertState.Safe);
-
-        ledStripService.SetColor(finalColor, true);
+        stateManagerService.SetState(AlertState.None, this);
     }
 
     private void ResetCancellationToken()

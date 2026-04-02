@@ -1,3 +1,4 @@
+using RedAlertLEDs.Repositories;
 using RedAlertLEDs.Services.LedStrip;
 using RedAlertLEDs.Services.Polygons;
 using RedAlertLEDs.Services.Predictor;
@@ -11,7 +12,8 @@ public class Orchestrator(
     PolygonsService polygonsService,
     StateManagerService stateManagerService,
     PredictorService predictorService,
-    LedStripService ledStripService)
+    LedStripService ledStripService
+)
 {
     public async Task Initialize()
     {
@@ -19,8 +21,8 @@ public class Orchestrator(
         polygonsService.RelevantAlertReceived += stateManagerService.OnRelevantAlertReceived;
         stateManagerService.AlertStateChanged += ledStripService.OnAlertStateChanged;
         stateManagerService.AlertStateChanged += predictorService.OnAlertStateChanged;
-        
-        // await ledStripService.TurnOn();
+
+        await ledStripService.TurnOn();
     }
 
     public async Task Stop()

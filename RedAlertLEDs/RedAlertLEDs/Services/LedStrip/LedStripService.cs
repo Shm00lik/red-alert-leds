@@ -7,12 +7,20 @@ namespace RedAlertLEDs.Services.LedStrip;
 public class LedStripService
 {
     public const int NumOfLeds = 86;
+    private const int OpenDelay = 2000;
 
-    private readonly ArduinoLedStrip _ledStrip = new(NumOfLeds);
+    private readonly ArduinoLedStrip _ledStrip = new(NumOfLeds, Arduino.DefaultPort);
+    private bool _isReady;
+    private double _colorMultiplier = 1;
 
     public void OnAlertStateChanged(object? sender, AlertStateChangedEventArgs e)
     {
-        var color = GetStateColor(e.CurrentState);
+        if (!_isReady)
+        {
+            return;
+        }
+
+        var color = GetStateColor(e.State);
         _ledStrip.SetColor(color, true);
     }
 
@@ -26,16 +34,31 @@ public class LedStripService
         }
     }
 
-    public void SetColor(Color color, bool update = false) {
+    public void SetColor(Color color, bool update = false)
+    {
         _ledStrip.SetColor(color, true);
+    }
+
+    public void SetColorMultiplier(double multiplier)
+    {
+        _colorMultiplier = multiplier;
+    }
+
+    public double GetColorMultiplier()
+    {
+        return _colorMultiplier;
     }
 
     public async Task TurnOn()
     {
+        await Task.Delay(OpenDelay);
+
         var noneColor = GetStateColor(AlertState.None);
         var safeColor = GetStateColor(AlertState.Safe);
 
         await Blink(safeColor, noneColor, 150);
+
+        _isReady = true;
     }
 
     public async Task TurnOff()
@@ -44,6 +67,8 @@ public class LedStripService
         var safeColor = GetStateColor(AlertState.Safe);
 
         await Blink(safeColor, noneColor, 150);
+
+        _isReady = false;
     }
 
     private async Task Blink(Color color1, Color color2, int intervalMs)
@@ -63,19 +88,20 @@ public class LedStripService
         _ledStrip.SetColor(color2, true);
     }
 
-    public static Color GetStateColor(AlertState state)
+    public Color GetStateColor(AlertState state)
     {
-        switch (state)
+        var color = state switch
         {
-            case AlertState.EarlyWarning:
-                return Color.OrangeRed;
-            case AlertState.Alert:
-                return Color.Red;
-            case AlertState.Safe:
-                return Color.Green;
-            case AlertState.None:
-            default:
-                return Color.Black;
-        }
+            AlertState.EarlyWarning => Color.OrangeRed,
+            AlertState.Alert => Color.Red,
+            AlertState.Safe => Color.Green,
+            _ => Color.Black // Also for AlertState.None
+        };
+
+        return Color.FromArgb(
+            (int)(color.R * _colorMultiplier),
+            (int)(color.G * _colorMultiplier),
+            (int)(color.B * _colorMultiplier)
+        );
     }
 }

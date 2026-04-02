@@ -1,12 +1,12 @@
 using RedAlertLEDs.BO;
 using RedAlertLEDs.BO.Alerts;
+using RedAlertLEDs.Repositories;
 using RedAlertLEDs.Services.Tzofar;
 
 namespace RedAlertLEDs.Services.Polygons;
 
-public class PolygonsService
+public class PolygonsService(PolygonsRepository polygonsRepository)
 {
-    private List<string> _relevantPolygons = ["תל אביב"];
     private DateTime _lastAlertTime = DateTime.MinValue;
 
     public event EventHandler<RelevantAlertEventArgs>? RelevantAlertReceived;
@@ -18,15 +18,12 @@ public class PolygonsService
             return;
         }
 
-        var isRelevantAlert = true; //_relevantPolygons.Any(p => e.Alert.Polygon == p);
-
-        if (!isRelevantAlert)
+        if (!IsAlertRelevant(e.Alert))
         {
             return;
         }
 
         _lastAlertTime = e.Alert.Time;
-
 
         OnRelevantAlertReceived(e.Alert);
     }
@@ -37,5 +34,12 @@ public class PolygonsService
         {
             Alert = alert
         });
+    }
+
+    private bool IsAlertRelevant(Alert alert)
+    {
+        var relevantPolygons = polygonsRepository.GetPolygons();
+
+        return relevantPolygons.Count == 0 || relevantPolygons.Any(p => alert.Polygons.Contains(p));
     }
 }

@@ -1,11 +1,14 @@
 using System.IO.Ports;
+using System.Runtime.InteropServices;
 
 namespace RedAlertLEDs.Hardware;
 
 public class Arduino : IDisposable
-{    
+{
     public const int DefaultBaudRate = 115200;
-    public const string DefaultPort = "COM5";
+
+    public static readonly string DefaultPort = GetDefaultPort();
+
     private const byte StartByte = 0xAA;
     private const int ReadTimeout = 500;
 
@@ -25,6 +28,14 @@ public class Arduino : IDisposable
 
         _port.Write(buffer, 0, buffer.Length);
         _port.ReadByte();
+    }
+
+    private static string GetDefaultPort()
+    {
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "COM5" :
+            RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/dev/ttyACM0" :
+            RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "/dev/tty.usbmodem" :
+            throw new PlatformNotSupportedException();
     }
 
     public void Dispose()

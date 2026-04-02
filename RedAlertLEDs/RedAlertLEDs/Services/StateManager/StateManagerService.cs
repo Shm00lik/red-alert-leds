@@ -29,11 +29,15 @@ public class StateManagerService(ILogger logger)
     {
         AlertStateChanged?.Invoke(sender, new AlertStateChangedEventArgs
         {
-            PreviousState = _currentState,
-            CurrentState = state
+            State = state
         });
 
         _currentState = state;
+    }
+
+    public AlertState GetState()
+    {
+        return _currentState;
     }
 
     private static AlertState GetStateForAlert(Alert alert)

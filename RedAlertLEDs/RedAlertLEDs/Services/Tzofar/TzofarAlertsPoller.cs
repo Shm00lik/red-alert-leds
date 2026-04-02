@@ -10,14 +10,18 @@ namespace RedAlertLEDs.Services.Tzofar;
 public class TzofarAlertsPoller(ILogger logger) : BackgroundService
 {
     private const int WebsocketMessageBufferSize = 4096;
+    private const int MaxFailureCount = 10;
 
     private readonly Uri _wsUri = new("wss://ws.tzevaadom.co.il/socket?platform=WEB");
+
+    private int _failureCounter = 0;
+    private bool _isPolling = true;
 
     public event EventHandler<AlertEventArgs>? AlertReceived;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        while (!stoppingToken.IsCancellationRequested && _isPolling)
         {
             using var socket = new ClientWebSocket();
 
@@ -25,6 +29,8 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
 
             try
             {
+                logger.Information("Websocket trying to connect...");
+                
                 await socket.ConnectAsync(_wsUri, stoppingToken);
 
                 logger.Information("Websocket connected!");
@@ -34,10 +40,12 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
             catch (OperationCanceledException)
             {
                 logger.Information("Websocket connection cancelled.");
+                return;
             }
             catch (Exception e)
             {
                 logger.Error(e, "Websocket connection exception!");
+                await HandleWebsocketFailure(stoppingToken);
             }
         }
     }
@@ -102,7 +110,7 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
         OnAlertReceived(alert);
     }
 
-    private Alert ConvertAlertMessageDataToAlert(JsonObject data)
+    private static Alert ConvertAlertMessageDataToAlert(JsonObject data)
     {
         var alertDateTime = DateTimeOffset
             .FromUnixTimeSeconds(data["time"]?.GetValue<long>() ?? 0)
@@ -125,7 +133,7 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
         };
     }
 
-    private Alert ConvertSystemMessageDataToAlert(JsonObject data)
+    private static Alert ConvertSystemMessageDataToAlert(JsonObject data)
     {
         var alertDateTime = DateTimeOffset
             .FromUnixTimeSeconds(long.Parse(data["time"]?.GetValue<string>() ?? string.Empty))
@@ -140,7 +148,7 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
 
         var alertPolygonsIds = data["citiesIds"]?.Deserialize<List<int>>() ?? [];
         var alertPolygons = alertPolygonsIds.Select(id => id.ToString()).ToList();
-        
+
         return new Alert
         {
             Time = alertDateTime,
@@ -163,7 +171,28 @@ public class TzofarAlertsPoller(ILogger logger) : BackgroundService
     {
         logger.Information("Closing connection!");
         await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
-        logger.Information("Conneciton closed!");
+        logger.Information("Connection closed!");
+    }
+
+    private async Task HandleWebsocketFailure(CancellationToken ct)
+    {
+        _failureCounter++;
+
+        if (_failureCounter >= MaxFailureCount)
+        {
+            logger.Error(
+                "Websocket connection failed {Max} times (maximum). Stopping the poller.",
+                MaxFailureCount
+            );
+            _isPolling = false;
+            return;
+        }
+
+        var delay = TimeSpan.FromMinutes(_failureCounter * 2);
+
+        logger.Warning("Websocket connection failed. Retrying in {Delay} seconds...", delay.TotalSeconds);
+
+        await Task.Delay(delay, ct);
     }
 
     private void OnAlertReceived(Alert alert)

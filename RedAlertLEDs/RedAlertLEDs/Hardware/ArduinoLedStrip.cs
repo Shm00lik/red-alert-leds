@@ -6,7 +6,7 @@ public class ArduinoLedStrip(Arduino arduino, int numLeds)
 {
     private readonly byte[] _buffer = new byte[numLeds * 3];
 
-    public ArduinoLedStrip(int numLeds, string port = Arduino.DefaultPort, int baudrate = Arduino.DefaultBaudRate)
+    public ArduinoLedStrip(int numLeds, string port, int baudrate = Arduino.DefaultBaudRate)
         : this(new Arduino(port, baudrate), numLeds)
     {
     }
