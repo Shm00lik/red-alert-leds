@@ -42,7 +42,8 @@ export function StatusHero({ status, colors, offline }: StatusHeroProps) {
 
       <div className="relative flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
         <div className="relative size-52 shrink-0">
-          <svg viewBox="0 0 200 200" className="size-full -rotate-90">
+          {/* overflow-visible: the ring's glow extends past the viewBox and would otherwise be clipped */}
+          <svg viewBox="0 0 200 200" className="size-full -rotate-90 overflow-visible">
             <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgb(255 255 255 / 0.06)" strokeWidth="12" />
             <circle
               cx="100"
