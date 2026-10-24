@@ -1,9 +1,0 @@
-using RedAlertLEDs.BO;
-using RedAlertLEDs.BO.Alerts;
-
-namespace RedAlertLEDs.Services.Polygons;
-
-public class RelevantAlertEventArgs : EventArgs
-{
-    public Alert Alert { get; init; }
-}

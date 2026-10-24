@@ -8,20 +8,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
-        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
-        <PackageReference Include="System.IO.Ports" Version="10.0.5" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <InternalsVisibleTo Include="RedAlertLEDs.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MQTTnet" Version="5.2.0.1603" />
     </ItemGroup>
 
 </Project>

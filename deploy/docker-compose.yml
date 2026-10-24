@@ -1,0 +1,21 @@
+services:
+  redalert:
+    build:
+      context: ../RedAlertLEDs
+      dockerfile: RedAlertLEDs/Dockerfile
+    image: red-alert-leds
+    container_name: redalert
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+    volumes:
+      - ./data:/app/data
+    networks:
+      - mqtt
+
+networks:
+  mqtt:
+    external: true

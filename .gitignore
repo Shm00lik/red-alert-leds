@@ -54,3 +54,8 @@ TestResult.xml
 nunit-*.xml
 
 .idea/
+# Built frontend copied in for local runs, runtime data, secrets
+RedAlertLEDs/RedAlertLEDs/wwwroot/
+RedAlertLEDs/RedAlertLEDs/data/
+deploy/data/
+deploy/.env
