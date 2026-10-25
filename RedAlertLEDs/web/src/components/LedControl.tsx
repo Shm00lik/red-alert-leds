@@ -98,7 +98,7 @@ export function LedControl({ colors }: { colors?: StateColors }) {
         )}
 
         {effect === 'blink' && (
-          <Slider label="Blink period" value={periodMs} min={200} max={3000} step={100} unit="ms" onChange={setPeriodMs} />
+          <Slider label="Blink period" value={periodMs} min={100} max={3000} step={25} unit="ms" onChange={setPeriodMs} />
         )}
 
         {effect === 'progress' && (

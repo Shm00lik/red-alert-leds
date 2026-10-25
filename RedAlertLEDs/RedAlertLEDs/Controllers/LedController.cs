@@ -19,6 +19,11 @@ public class LedController(AlertEngine engine) : ControllerBase
             return BadRequest("Color must look like #RRGGBB");
         }
 
+        if (command.PeriodMs is < 100)
+        {
+            return BadRequest("PeriodMs must be at least 100");
+        }
+
         await engine.SetManualAsync(command);
         return NoContent();
     }
